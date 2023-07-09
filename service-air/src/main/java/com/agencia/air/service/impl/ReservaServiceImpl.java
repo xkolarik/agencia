@@ -23,19 +23,25 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Override
     public Reserva criarReserva(ReservaDTO reservaDTO) {
-//        // Salva a reserva no banco de dados
-//        Reserva reserva = new Reserva();
-//
-//        reservaRepository.save(reserva);
-//
-//        // Emite o evento usando o Apache Kafka
-//        kafkaTemplate.send(TOPIC, reserva);
+        // Salva a reserva no banco de dados
+        Reserva reserva = new Reserva();
 
-        return null;
+        reserva.setUsuario(reservaDTO.getUsuario());
+        reserva.setDestino(reservaDTO.getDestino());
+        reserva.setDt(reservaDTO.getDt());
+
+        return reservaRepository.save(reserva);
     }
 
     @Override
     public void save(Reserva reserva) {
-        reservaRepository.save(reserva);
+        Reserva reservaAir = new Reserva();
+
+        reservaAir.setIdAgencia(reserva.getId());
+        reservaAir.setUsuario(reserva.getUsuario());
+        reservaAir.setDestino(reserva.getDestino());
+        reservaAir.setDt(reserva.getDt());
+
+        reservaRepository.save(reservaAir);
     }
 }

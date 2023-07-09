@@ -13,6 +13,8 @@ public class Reserva {
 
     @Id
     private String id;
+
+    private String idAgencia;
     private String usuario;
     private String dt;
     private String destino;
