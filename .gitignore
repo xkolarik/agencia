@@ -1,0 +1,53 @@
+# Compiled class files
+target/
+bin/
+
+# Package files
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+.vscode/
+
+# Dependency directories
+lib/
+libs/
+
+# Build output
+build/
+out/
+
+# Gradle-specific
+.gradle/
+build.gradle
+!gradle/wrapper/gradle-wrapper.jar
+
+# Maven-specific
+target/
+pom.xml.*
+pom.xml.tag
+
+# Eclipse-specific
+.classpath
+.project
+.settings/
+
+# IntelliJ-specific
+*.iml
+*.ipr
+*.iws
+*.idea/
+
+# NetBeans-specific
+nbproject/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# macOS-specific
+.DS_Store
+
+# Windows-specific
+Thumbs.db
