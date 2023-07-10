@@ -7,6 +7,11 @@ spring:
     serialization:
       write_dates_as_timestamps: false
 
+  spring:
+    data:
+      mongodb:
+        uri: ${SPRING_DATA_MONGODB_URI}
+
 server:
   connection-timeout: 60000
   session.timeout: 60000
@@ -19,32 +24,13 @@ services-security:
   password: 008a8005-c66a-4888-b115-32d95572c213
   role: API
 
-#  data:
-#    mongodb:
-#      authentication-database: admin
-#      host: localhost
-#      port: 27017
-#      database: images
-#      username: user
-#      password: password
-
   spring:
     kafka:
       consumer:
-        group-id: group-2
+        group-id: consumer-group-car
         bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
         auto-offset-reset: earliest
         key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
         value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
         properties:
-          spring.json.trusted.packages: "com.agencia.car.model"
-
-
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    consumer:
-#      group-id: group-id
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.trusted.packages: "*"
-
+          spring.json.trusted.packages: "*"

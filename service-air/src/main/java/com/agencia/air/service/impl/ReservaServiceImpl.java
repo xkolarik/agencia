@@ -5,7 +5,6 @@ import com.agencia.air.model.ReservaDTO;
 import com.agencia.air.repository.ReservaRepository;
 import com.agencia.air.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,13 +12,6 @@ public class ReservaServiceImpl implements ReservaService {
 
     @Autowired
     private ReservaRepository reservaRepository;
-    private static final String TOPIC = "reservaskfka";
-
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-
-    public ReservaServiceImpl(KafkaTemplate<String, Object> kafkaTemplate) {
-        this.kafkaTemplate = kafkaTemplate;
-    }
 
     @Override
     public Reserva criarReserva(ReservaDTO reservaDTO) {

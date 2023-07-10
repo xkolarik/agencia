@@ -13,18 +13,20 @@ services:
   #   volumes:
   #     - ../scripts/init-air.js:/docker-entrypoint-initdb.d/init.js:ro
 
-  # mongodb-car:
-  #   image: mongo:4.2
-  #   hostname: mongo-car
-  #   container_name: mongodb-car
-  #   ports:
-  #     - 27018:27017
-  #   environment:
-  #     MONGO_INITDB_DATABASE: car
-  #     MONGO_INITDB_ROOT_USERNAME: user
-  #     MONGO_INITDB_ROOT_PASSWORD: password
-  #   volumes:
-  #     - ../scripts/init-car.js:/docker-entrypoint-initdb.d/init.js:ro
+  mongodb-car:
+    image: mongo:4.2
+    hostname: mongo-car
+    container_name: mongodb-car
+    ports:
+      - 27029:27017
+    environment:
+      MONGO_INITDB_DATABASE: car
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./scripts/init-car.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - app-network
 
   # mongodb-hotel:
   #   image: mongo:4.2
@@ -128,16 +130,24 @@ services:
     - mongodb-air
     networks:
     - app-network
-    # Adicione outras configurações necessárias para o serviço service-air
+
+  service-car:
+    image: service-car-image
+    container_name: service-car
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-car:27017/car
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+    - 8082:8082
+    depends_on:
+    - kafka  # Adiciona kafka como dependência do serviço service-air
+    - mongodb-car
+    networks:
+    - app-network
 
 networks:
   app-network:
     driver: bridge
-
-  # service-car:
-  #   image: service-car-image
-  #   container_name: service-car
-  #   # Adicione outras configurações necessárias para o serviço service-car
 
   # service-hotel:
   #   image: service-hotel-image

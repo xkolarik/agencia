@@ -25,7 +25,7 @@ public class ReservaController {
     @PostMapping
     public ResponseEntity<ReservaResponse> criarReserva(@RequestBody ReservaDTO reservaDTO) {
         Reserva response = reservaService.criarReserva(reservaDTO);
-        ReservaResponse reservaResponse = new ReservaResponse("Reserva criada com sucesso!", response);
+        ReservaResponse reservaResponse = new ReservaResponse("Reserva Air criada com sucesso!", response);
         return ResponseEntity.ok(reservaResponse);
     }
 }
