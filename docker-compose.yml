@@ -119,10 +119,13 @@ services:
     image: service-air-image
     container_name: service-air
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-air:27028/air
-      - SPRING_KAFKA_SERVERS=kafka:9092
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-air:27017/air
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     ports:
     - 8086:8086
+    depends_on:
+    - kafka  # Adiciona kafka como dependência do serviço service-air
+    - mongodb-air
     networks:
     - app-network
     # Adicione outras configurações necessárias para o serviço service-air
