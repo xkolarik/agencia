@@ -11,7 +11,7 @@ public class ReservarQuarto {
     @Autowired
     private ReservaService reservaService;
 
-    @KafkaListener(topics = "reservaskfka", groupId = "group-1")
+    @KafkaListener(topics = "reservaskfka", groupId = "consumer-group-hotel")
     public void consume(Reserva reserva) {
         reservaService.save(reserva);
     }

@@ -1,6 +1,8 @@
 package com.agencia.hotel.controller;
 
+import com.agencia.hotel.model.Reserva;
 import com.agencia.hotel.model.ReservaDTO;
+import com.agencia.hotel.model.ReservaResponse;
 import com.agencia.hotel.service.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +23,9 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<String> criarReserva(@RequestBody ReservaDTO reservaDTO) {
-        reservaService.criarReserva(reservaDTO);
-        return ResponseEntity.ok("Reserva criada com sucesso!");
+    public ResponseEntity<ReservaResponse> criarReserva(@RequestBody ReservaDTO reservaDTO) {
+        Reserva response = reservaService.criarReserva(reservaDTO);
+        ReservaResponse reservaResponse = new ReservaResponse("Reserva de Hotel criada com sucesso!", response);
+        return ResponseEntity.ok(reservaResponse);
     }
 }

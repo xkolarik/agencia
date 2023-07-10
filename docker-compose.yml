@@ -1,18 +1,5 @@
 version: "3.7"
 services:
-  # mongodb-air:
-  #   image: mongo:4.2
-  #   hostname: mongo-air
-  #   container_name: mongodb-air
-  #   ports:
-  #     - 27017:27017
-  #   environment:
-  #     MONGO_INITDB_DATABASE: air
-  #     MONGO_INITDB_ROOT_USERNAME: user
-  #     MONGO_INITDB_ROOT_PASSWORD: password
-  #   volumes:
-  #     - ../scripts/init-air.js:/docker-entrypoint-initdb.d/init.js:ro
-
   mongodb-car:
     image: mongo:4.2
     hostname: mongo-car
@@ -28,18 +15,20 @@ services:
     networks:
       - app-network
 
-  # mongodb-hotel:
-  #   image: mongo:4.2
-  #   hostname: mongo-hotel
-  #   container_name: mongodb-hotel
-  #   ports:
-  #     - 27019:27017
-  #   environment:
-  #     MONGO_INITDB_DATABASE: hotel
-  #     MONGO_INITDB_ROOT_USERNAME: user
-  #     MONGO_INITDB_ROOT_PASSWORD: password
-  #   volumes:
-  #     - ../scripts/init-hotel.js:/docker-entrypoint-initdb.d/init.js:ro
+  mongodb-hotel:
+    image: mongo:4.2
+    hostname: mongo-hotel
+    container_name: mongodb-hotel
+    ports:
+      - 27026:27017
+    environment:
+      MONGO_INITDB_DATABASE: hotel
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./scripts/init-hotel.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - app-network
 
   mongodb-reservas:
     image: mongo:4.2
@@ -145,16 +134,25 @@ services:
     networks:
     - app-network
 
+  service-hotel:
+    image: service-hotel-image
+    container_name: service-hotel
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-hotel:27017/hotel
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+    - 8083:8083
+    depends_on:
+    - kafka  # Adiciona kafka como dependência do serviço service-air
+    - mongodb-hotel
+    networks:
+    - app-network
+ 
+
+
 networks:
   app-network:
     driver: bridge
-
-  # service-hotel:
-  #   image: service-hotel-image
-  #   container_name: service-hotel
-  #   # Adicione outras configurações necessárias para o serviço service-hotel
-
-
 
       #docker build -t service-reservas-image .
       #docker build -t service-car-image .
