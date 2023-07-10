@@ -7,10 +7,15 @@ spring:
     serialization:
       write_dates_as_timestamps: false
 
+  spring:
+    data:
+      mongodb:
+        uri: ${SPRING_DATA_MONGODB_URI}
+
 server:
   connection-timeout: 60000
   session.timeout: 60000
-  port: 8084
+  port: 8080
   servlet:
     context-path: /api
 
@@ -19,11 +24,20 @@ services-security:
   password: 008a8005-c66a-4888-b115-32d95572c213
   role: API
 
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    consumer:
-#      group-id: group-id
-#      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-#      properties:
-#        spring.json.trusted.packages: "*"
+  spring:
+    kafka:
+      producer:
+        retries: 0
+        acks: all
+        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      consumer:
+        group-id: group-1
+        bootstrap-servers: ${SPRING_KAFKA_BOOTSTRAP_SERVERS}
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring.json.trusted.packages: "*"
 

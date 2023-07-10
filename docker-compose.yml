@@ -1,0 +1,168 @@
+version: "3.7"
+services:
+  # mongodb-air:
+  #   image: mongo:4.2
+  #   hostname: mongo-air
+  #   container_name: mongodb-air
+  #   ports:
+  #     - 27017:27017
+  #   environment:
+  #     MONGO_INITDB_DATABASE: air
+  #     MONGO_INITDB_ROOT_USERNAME: user
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   volumes:
+  #     - ../scripts/init-air.js:/docker-entrypoint-initdb.d/init.js:ro
+
+  # mongodb-car:
+  #   image: mongo:4.2
+  #   hostname: mongo-car
+  #   container_name: mongodb-car
+  #   ports:
+  #     - 27018:27017
+  #   environment:
+  #     MONGO_INITDB_DATABASE: car
+  #     MONGO_INITDB_ROOT_USERNAME: user
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   volumes:
+  #     - ../scripts/init-car.js:/docker-entrypoint-initdb.d/init.js:ro
+
+  # mongodb-hotel:
+  #   image: mongo:4.2
+  #   hostname: mongo-hotel
+  #   container_name: mongodb-hotel
+  #   ports:
+  #     - 27019:27017
+  #   environment:
+  #     MONGO_INITDB_DATABASE: hotel
+  #     MONGO_INITDB_ROOT_USERNAME: user
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #   volumes:
+  #     - ../scripts/init-hotel.js:/docker-entrypoint-initdb.d/init.js:ro
+
+  mongodb-reservas:
+    image: mongo:4.2
+    hostname: mongo-reservas
+    container_name: mongodb-reservas
+    ports:
+      - 27027:27017
+    environment:
+      MONGO_INITDB_DATABASE: agencia
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./docker/scripts/init-reservas.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - app-network
+
+  mongodb-air:
+    image: mongo:4.2
+    hostname: mongo-air
+    container_name: mongodb-air
+    ports:
+      - 27028:27017
+    environment:
+      MONGO_INITDB_DATABASE: air
+      MONGO_INITDB_ROOT_USERNAME: user
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./docker/scripts/init-air.js:/docker-entrypoint-initdb.d/init.js:ro
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb-reservas
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=user
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=password
+    networks:
+      - app-network
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - app-network
+  kafka:
+    image: wurstmeister/kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: "reservaskfka:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - app-network
+      
+  service-reservas:
+    image: service-reservas-image
+    container_name: service-reservas
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-reservas:27017/agencia
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+    - 8080:8080
+      # Adicione outras configurações necessárias para o serviço service-reservas
+    networks:
+    - app-network
+
+  service-air:
+    image: service-air-image
+    container_name: service-air
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-air:27028/air
+      - SPRING_KAFKA_SERVERS=kafka:9092
+    ports:
+    - 8086:8086
+    networks:
+    - app-network
+    # Adicione outras configurações necessárias para o serviço service-air
+
+networks:
+  app-network:
+    driver: bridge
+
+  # service-car:
+  #   image: service-car-image
+  #   container_name: service-car
+  #   # Adicione outras configurações necessárias para o serviço service-car
+
+  # service-hotel:
+  #   image: service-hotel-image
+  #   container_name: service-hotel
+  #   # Adicione outras configurações necessárias para o serviço service-hotel
+
+
+
+      #docker build -t service-reservas-image .
+      #docker build -t service-car-image .
+      #docker build -t service-air-image .
+      #docker build -t service-hotel-image .
+      #mvn clean install -DskipTests
+
+# //RESERVAS
+# http://localhost:8080/api/swagger-ui/index.html#/
+
+# //AIR
+# http://localhost:8085/api/swagger-ui/index.html#/    
+
+# //CAR 
+# http://localhost:8082/api/swagger-ui/index.html#/
+
+# //HOTEL
+# http://localhost:8083/api/swagger-ui/index.html#/
+
+
+
+
+      
+
