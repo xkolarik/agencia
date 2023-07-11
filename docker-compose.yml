@@ -30,18 +30,18 @@ services:
     networks:
       - app-network
 
-  mongodb-reservas:
+  mongodb-bookings:
     image: mongo:4.2
-    hostname: mongo-reservas
-    container_name: mongodb-reservas
+    hostname: mongo-bookings
+    container_name: mongodb-bookings
     ports:
       - 27027:27017
     environment:
-      MONGO_INITDB_DATABASE: agencia
+      MONGO_INITDB_DATABASE: agency
       MONGO_INITDB_ROOT_USERNAME: user
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - ./docker/scripts/init-reservas.js:/docker-entrypoint-initdb.d/init.js:ro
+      - ./docker/scripts/init-agency.js:/docker-entrypoint-initdb.d/init.js:ro
     networks:
       - app-network
 
@@ -67,13 +67,14 @@ services:
     ports:
       - 8081:8081
     environment:
-      - ME_CONFIG_MONGODB_SERVER=mongodb-reservas
+      - ME_CONFIG_MONGODB_SERVER=mongodb-bookings
       - ME_CONFIG_MONGODB_ADMINUSERNAME=user
       - ME_CONFIG_MONGODB_ADMINPASSWORD=password
       - ME_CONFIG_BASICAUTH_USERNAME=admin
       - ME_CONFIG_BASICAUTH_PASSWORD=password
     networks:
       - app-network
+
 
   zookeeper:
     image: wurstmeister/zookeeper
@@ -88,21 +89,20 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: kafka
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_CREATE_TOPICS: "reservaskfka:1:1"
+      KAFKA_CREATE_TOPICS: "bookingskafka:1:1"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - app-network
       
-  service-reservas:
-    image: service-reservas-image
-    container_name: service-reservas
+  service-bookings:
+    image: service-bookings-image
+    container_name: service-bookings
     environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-reservas:27017/agencia
+      - SPRING_DATA_MONGODB_URI=mongodb://user:password@mongodb-bookings:27017/agency
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     ports:
     - 8080:8080
-      # Adicione outras configurações necessárias para o serviço service-reservas
     networks:
     - app-network
 
@@ -147,20 +147,18 @@ services:
     - mongodb-hotel
     networks:
     - app-network
- 
-
 
 networks:
   app-network:
     driver: bridge
 
-      #docker build -t service-reservas-image .
+      #docker build -t service-bookings-image .
       #docker build -t service-car-image .
       #docker build -t service-air-image .
       #docker build -t service-hotel-image .
       #mvn clean install -DskipTests
 
-# //RESERVAS
+# //BOOKINGS
 # http://localhost:8080/api/swagger-ui/index.html#/
 
 # //AIR
@@ -171,6 +169,11 @@ networks:
 
 # //HOTEL
 # http://localhost:8083/api/swagger-ui/index.html#/
+
+#mongodb://user:password@localhost:27026/hotel?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#mongodb://user:password@localhost:27027/agencia?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#mongodb://user:password@localhost:27028/air?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
+#mongodb://user:password@localhost:27029/car?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&directConnection=true&ssl=false
 
 
 
